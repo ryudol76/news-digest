@@ -1,0 +1,62 @@
+name: 아침 뉴스 브리핑
+
+on:
+  schedule:
+    - cron: "30 23 * * *"  # 매일 08:30 KST. GitHub 크론은 늦게 도는 일이 잦아서 미리 시작하고 9시까지 기다린다.
+  workflow_dispatch:       # Actions 탭에서 수동 실행 (기다리지 않고 바로 전송)
+
+permissions:
+  contents: write
+
+concurrency: briefing
+
+jobs:
+  briefing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      TZ: Asia/Seoul
+      SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+      KAKAO_REST_KEY: ${{ secrets.KAKAO_REST_KEY }}
+      KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+      KAKAO_TOKEN_KEY: ${{ secrets.KAKAO_TOKEN_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: 의존성 설치
+        run: |
+          pip install -r requirements.txt
+          npm install -g @anthropic-ai/claude-code
+
+      - name: 브리핑 생성
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python news.py --out-dir docs --message-file message.json
+
+      - name: 페이지 배포 (커밋)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs
+          git commit -m "브리핑 $(date +%F)"
+          git push
+
+      - name: 카톡 전송
+        run: python kakao.py send --message-file message.json --site-url "$SITE_URL" --send-at "${{ github.event_name == 'schedule' && '09:00' || '' }}"
+
+      - name: 실패 알림
+        if: failure()
+        run: python kakao.py fail --url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+      # 카카오 refresh token이 갱신됐으면 저장해 둔다 (한 달에 한 번꼴).
+      - name: 토큰 저장
+        if: always()
+        run: |
+          git add kakao_token.enc
+          git diff --cached --quiet || (git commit -m "카카오 토큰 갱신" && git pull --rebase && git push)

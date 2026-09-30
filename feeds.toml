@@ -1,0 +1,72 @@
+# 섹션마다 피드를 모으고, Claude가 섹션별로 중요한 사건 top N개를 골라 묶는다.
+# 섹션을 빼고 싶으면 [[sections]] 블록을 지우면 된다.
+# front = true인 섹션(1면)을 먼저 편집하고, 나머지 섹션은 1면에 실린 사건을 빼고 고른다.
+# 정치·세계는 논조가 한쪽으로 쏠리지 않게 진보·보수 언론을 함께 넣었다.
+
+[[sections]]
+name = "종합"
+pick = 5
+front = true
+feeds = [
+    { name = "연합뉴스", url = "https://www.yna.co.kr/rss/news.xml" },
+    { name = "한겨레", url = "https://www.hani.co.kr/rss/" },
+    { name = "경향신문", url = "https://www.khan.co.kr/rss/rssdata/total_news.xml" },
+    { name = "조선일보", url = "https://www.chosun.com/arc/outboundfeeds/rss/?outputType=xml" },
+    { name = "동아일보", url = "https://rss.donga.com/total.xml" },
+]
+
+[[sections]]
+name = "정치"
+pick = 5
+feeds = [
+    { name = "연합뉴스", url = "https://www.yna.co.kr/rss/politics.xml" },
+    { name = "한겨레", url = "https://www.hani.co.kr/rss/politics/" },
+    { name = "경향신문", url = "https://www.khan.co.kr/rss/rssdata/politic_news.xml" },
+    { name = "조선일보", url = "https://www.chosun.com/arc/outboundfeeds/rss/category/politics/?outputType=xml" },
+    { name = "동아일보", url = "https://rss.donga.com/politics.xml" },
+]
+
+[[sections]]
+name = "경제·금융"
+pick = 5
+focus = "금리·환율·증시·부동산 금융, 은행·증권·보험·가상자산, 통화·재정 정책을 우선한다. 개별 기업 홍보성 기사는 뺀다."
+feeds = [
+    { name = "연합뉴스", url = "https://www.yna.co.kr/rss/economy.xml" },
+    { name = "연합뉴스", url = "https://www.yna.co.kr/rss/market.xml" },
+    { name = "연합인포맥스", url = "https://news.einfomax.co.kr/rss/allArticle.xml" },
+    { name = "한국경제", url = "https://www.hankyung.com/feed/economy" },
+    { name = "한국경제", url = "https://www.hankyung.com/feed/finance" },
+    { name = "한겨레", url = "https://www.hani.co.kr/rss/economy/" },
+    { name = "조선일보", url = "https://www.chosun.com/arc/outboundfeeds/rss/category/economy/?outputType=xml" },
+]
+
+[[sections]]
+name = "세계"
+pick = 5
+feeds = [
+    { name = "연합뉴스", url = "https://www.yna.co.kr/rss/international.xml" },
+    { name = "한겨레", url = "https://www.hani.co.kr/rss/international/" },
+    { name = "경향신문", url = "https://www.khan.co.kr/rss/rssdata/kh_world.xml" },
+    { name = "조선일보", url = "https://www.chosun.com/arc/outboundfeeds/rss/category/international/?outputType=xml" },
+    { name = "동아일보", url = "https://rss.donga.com/international.xml" },
+]
+
+[[sections]]
+name = "IT·테크"
+pick = 5
+focus = "AI·클라우드·반도체·보안·빅테크·플랫폼·스타트업과 개발자에게 영향이 큰 소식을 우선한다. 기술과 무관한 산업 정책, 통상, 투자 발표는 뺀다."
+feeds = [
+    { name = "ZDNet Korea", url = "https://feeds.feedburner.com/zdkorea" },
+    { name = "블로터", url = "https://www.bloter.net/rss/allArticle.xml" },
+    { name = "바이라인네트워크", url = "https://byline.network/feed/" },
+    { name = "AI타임스", url = "https://www.aitimes.com/rss/allArticle.xml" },
+    { name = "디지털투데이", url = "https://www.digitaltoday.co.kr/rss/allArticle.xml" },
+    { name = "테크M", url = "https://www.techm.kr/rss/allArticle.xml" },
+    { name = "전자신문", url = "https://rss.etnews.com/Section901.xml" },
+    { name = "한국경제", url = "https://www.hankyung.com/feed/it" },
+]
+
+# 검색어마다 Google 뉴스 검색 결과로 섹션을 하나 만든다. 필요하면 주석을 풀어 쓰면 된다.
+# [[keywords]]
+# query = "AI"
+# pick = 3
