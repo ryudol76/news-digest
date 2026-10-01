@@ -137,7 +137,7 @@ def main() -> None:
         send_text(access_token(key), "⚠️ 오늘 뉴스 브리핑을 만들지 못했어요. 실행 로그를 확인해 주세요.", args.url, "로그 보기")
         return
 
-    message = json.loads(Path(args.message_file).read_text())
+    message = json.loads(Path(args.message_file).read_text(encoding="utf-8"))
     url = f"{args.site_url.rstrip('/')}/{message['page']}"
     wait_for_page(url)
     if args.send_at:

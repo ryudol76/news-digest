@@ -115,7 +115,7 @@ class Section:
 
 
 def load_sections() -> list[Section]:
-    config = tomllib.loads(FEEDS_FILE.read_text())
+    config = tomllib.loads(FEEDS_FILE.read_text(encoding="utf-8"))
     sections = [Section(s["name"], s["pick"], s["feeds"], s.get("front", False), s.get("focus", "")) for s in config.get("sections", [])]
     for k in config.get("keywords", []):
         url = f"https://news.google.com/rss/search?q={quote(k['query'])}+when:1d&hl=ko&gl=KR&ceid=KR:ko"
@@ -446,14 +446,14 @@ def run(args) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     page = render(sections, failed, now)
     out = out_dir / f"{now:%Y-%m-%d}.html"
-    out.write_text(page)
-    (out_dir / "index.html").write_text(page)  # 항상 최신 브리핑
+    out.write_text(page, encoding="utf-8")
+    (out_dir / "index.html").write_text(page, encoding="utf-8")  # 항상 최신 브리핑
     print(f"저장: {out}")
 
     if args.message_file:
         # 카톡 전송은 페이지를 배포한 뒤 kakao.py가 따로 한다.
         Path(args.message_file).write_text(json.dumps(
-            {"text": kakao_message(sections, now), "page": out.name}, ensure_ascii=False))
+            {"text": kakao_message(sections, now), "page": out.name}, ensure_ascii=False), encoding="utf-8")
     else:
         top = next((s.stories[0].headline for s in sections if s.stories), "")
         notify(f"오늘의 첫 소식: {top}" if top else "브리핑을 만들었어요.")
